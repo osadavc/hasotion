@@ -7,6 +7,7 @@ const App = ({ Component, pageProps }: AppProps) => {
     <>
       <Head>
         <title>Hasotion</title>
+        <link rel="shortcut icon" href="/logo.png" type="image/x-icon" />
       </Head>
 
       <Component {...pageProps} />
