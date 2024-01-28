@@ -27,7 +27,7 @@ export const auth = async (
     });
   }
 
-  (req.userId as any) = token.id;
+  req.userId = token.id;
   return next();
 };
 

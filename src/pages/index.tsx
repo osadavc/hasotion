@@ -1,4 +1,14 @@
-const Home = () => {
+import { GetServerSideProps, NextPage } from "next";
+import { getSession, signIn } from "next-auth/react";
+import { useRouter } from "next/router";
+
+interface HomeProps {
+  isLoggedIn: boolean;
+}
+
+const Home: NextPage<HomeProps> = ({ isLoggedIn }) => {
+  const router = useRouter();
+
   return (
     <div className="max-w-7xl mx-auto text-center flex flex-col min-h-screen justify-center items-center px-5">
       <img
@@ -10,11 +20,46 @@ const Home = () => {
         Write your <span className="text-[#2962FF]">hashnode</span> blog without
         leaving notion
       </h1>
-      <button className="text-3xl border-2 border-black px-8 py-3 mt-10 rounded-sm font-bold">
-        Get Started
-      </button>
+      {isLoggedIn ? (
+        <div>
+          <button
+            className="text-3xl border-2 border-black px-8 py-3 mt-10 rounded-sm font-bold"
+            onClick={() => {
+              router.push("/config");
+            }}
+          >
+            Edit your Configuration
+          </button>
+          <p className="text-xs mt-3">
+            * Make sure you&apos;re logged in here before publishing articles on
+            Notion
+          </p>
+        </div>
+      ) : (
+        <button
+          className="text-3xl border-2 border-black px-8 py-3 mt-10 rounded-sm font-bold"
+          onClick={() => {
+            signIn("google", {
+              redirect: true,
+              callbackUrl: "/config",
+            });
+          }}
+        >
+          Get Started
+        </button>
+      )}
     </div>
   );
+};
+
+export const getServerSideProps: GetServerSideProps = async (ctx) => {
+  const session = await getSession(ctx);
+
+  return {
+    props: {
+      isLoggedIn: !!session?.id,
+    },
+  };
 };
 
 export default Home;
