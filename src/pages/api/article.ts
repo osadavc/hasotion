@@ -12,7 +12,7 @@ import {
 const router = createRouter<NextApiRequestWithUser, NextApiResponse>();
 router.use(auth);
 
-router.all(async (req, res) => {
+router.get(async (req, res) => {
   res.redirect("/notion");
 });
 
