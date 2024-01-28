@@ -8,8 +8,10 @@ datasource db {
 }
 
 model User {
-  id             String @id
-  name           String
-  email          String
-  profilePicture String
+  id                  String  @id
+  name                String
+  email               String
+  profilePicture      String
+  notionPage          String?
+  hashnodeAccessToken String?
 }
