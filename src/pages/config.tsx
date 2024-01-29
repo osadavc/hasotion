@@ -6,6 +6,7 @@ const ConfigPage = () => {
   const [config, setConfig] = useState<{
     notionPage?: string;
     hashnodeAccessToken?: string;
+    hashnodePublicationId?: string;
   }>({});
 
   useEffect(() => {
@@ -25,6 +26,16 @@ const ConfigPage = () => {
     });
   };
 
+  const syncBlogs = async () => {
+    const syncBlogsAPI = axios.post("/api/sync");
+
+    await toast.promise(syncBlogsAPI, {
+      error: "Error Ocurred",
+      loading: "Syncing",
+      success: "Synced Saved",
+    });
+  };
+
   return (
     <div className="max-w-7xl mx-auto px-3">
       <div className="flex items-center flex-col pt-10">
@@ -34,7 +45,7 @@ const ConfigPage = () => {
             alt="Hasotion Logo"
             className="w-32 md:w-36 lg:w-44"
           />
-          <h1 className="font-inter font-black text-4xl capitalize mt-5 !leading-[1.15]">
+          <h1 className="font-inter font-black text-4xl capitalize mt-5 !leading-[1.15] text-center">
             Edit Hasotion Configuration
           </h1>
         </div>
@@ -100,13 +111,41 @@ const ConfigPage = () => {
             }}
           />
         </div>
+        <div className="border w-full mt-10 border-black min-h-5 rounded-sm px-5 py-6">
+          <h3 className="text-2xl">Hashnode Publication ID</h3>
+          <p className="mt-1">
+            Go to your Hashnode blog dashboard and copy the publication ID from
+            the URL. Details can be found{" "}
+            <a
+              href="https://support.hashnode.com/en/articles/6423579-developer-access-token"
+              target="_blank"
+              className="text-blue-500"
+            >
+              here.
+            </a>
+          </p>
+          <input
+            type="text"
+            placeholder="Hashnode Personal Access Token"
+            className="border px-3 py-2 w-full border-black mt-5 rounded-sm focus:outline-none"
+            value={config.hashnodePublicationId}
+            onChange={(e) => {
+              setConfig((prev) => ({
+                ...prev,
+                hashnodePublicationId: e.target.value,
+              }));
+            }}
+          />
+        </div>
       </div>
-      <button
-        className="my-10 bg-black text-white py-2 px-5 rounded-sm"
-        onClick={saveInfo}
-      >
-        Save Changes
-      </button>
+      <div className="mt-10 mb-5 flex space-x-5">
+        <button
+          className="bg-black text-white py-2 px-5 rounded-sm"
+          onClick={saveInfo}
+        >
+          Save Changes
+        </button>
+      </div>
     </div>
   );
 };
