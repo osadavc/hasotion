@@ -20,6 +20,8 @@ router.get(async (req, res) => {
     },
   });
 
+  console.log(user);
+
   res.json({
     data: {
       notionPage: user?.notionPage,
@@ -36,6 +38,18 @@ router.post(async (req, res) => {
       error: "Notion page or hashnode token is not provided",
     });
   }
+
+  await prisma.user.update({
+    where: {
+      id: req.userId,
+    },
+    data: {
+      hashnodeAccessToken: hashnodeAccessToken,
+      notionPage: notionPage,
+    },
+  });
+
+  res.status(200).end();
 });
 
 export default router.handler({

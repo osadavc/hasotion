@@ -1,6 +1,7 @@
 import "@/styles/globals.css";
 import type { AppProps } from "next/app";
 import Head from "next/head";
+import { Toaster } from "react-hot-toast";
 
 const App = ({ Component, pageProps }: AppProps) => {
   return (
@@ -11,6 +12,7 @@ const App = ({ Component, pageProps }: AppProps) => {
       </Head>
 
       <Component {...pageProps} />
+      <Toaster />
     </>
   );
 };
