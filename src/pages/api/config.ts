@@ -25,6 +25,7 @@ router.get(async (req, res) => {
       notionPage: user?.notionPage,
       hashnodeAccessToken: user?.hashnodeAccessToken,
       hashnodePublicationId: user?.hashnodePublicationId,
+      notionToken: !!user?.notionToken,
     },
   });
 });

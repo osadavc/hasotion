@@ -7,6 +7,7 @@ const ConfigPage = () => {
     notionPage?: string;
     hashnodeAccessToken?: string;
     hashnodePublicationId?: string;
+    notionToken?: boolean;
   }>({});
 
   useEffect(() => {
@@ -26,16 +27,6 @@ const ConfigPage = () => {
     });
   };
 
-  const syncBlogs = async () => {
-    const syncBlogsAPI = axios.post("/api/sync");
-
-    await toast.promise(syncBlogsAPI, {
-      error: "Error Ocurred",
-      loading: "Syncing",
-      success: "Synced Saved",
-    });
-  };
-
   return (
     <div className="max-w-7xl mx-auto px-3">
       <div className="flex items-center flex-col pt-10">
@@ -49,21 +40,14 @@ const ConfigPage = () => {
             Edit Hasotion Configuration
           </h1>
         </div>
+
         <div className="border w-full mt-14 border-black min-h-5 rounded-sm px-5 py-6">
           <div className="flex justify-between items-center">
             <h3 className="text-2xl">Notion Page</h3>
-            <a
-              href="https://osadavc.notion.site/25f38ed4737648368bb425d10b4d32ea?v=0d41c98629204b0ba8504155315d4287&pvs=4"
-              target="_blank"
-            >
-              <button className="bg-black text-white py-2 px-4 rounded-sm">
-                Notion Page
-              </button>
-            </a>
           </div>
           <p className="mt-1">
-            Clone the Notion template and share with full access and paste the
-            link here. Details can be found{" "}
+            Clone the Notion template using the button, give access to the
+            cloned page and paste the URL here. For more info, click{" "}
             <a
               href="https://support.hashnode.com/en/articles/6423579-developer-access-token"
               target="_blank"
@@ -72,19 +56,54 @@ const ConfigPage = () => {
               here.
             </a>
           </p>
-          <input
-            type="text"
-            placeholder="Notion Page URL"
-            className="border px-3 py-2 w-full border-black mt-5 rounded-sm focus:outline-none"
-            value={config.notionPage}
-            onChange={(e) => {
-              setConfig((prev) => ({
-                ...prev,
-                notionPage: e.target.value,
-              }));
-            }}
-          />
+
+          <div className="mt-5">
+            <p className="mt-2 font-bold">Step 1</p>
+            <p className="mt-1">Duplicate the Notion database template</p>
+            <a
+              href="https://osadavc.notion.site/25f38ed4737648368bb425d10b4d32ea?v=0d41c98629204b0ba8504155315d4287&pvs=4"
+              target="_blank"
+            >
+              <button className="bg-black text-white py-2 px-4 rounded-sm mt-3">
+                Notion Page
+              </button>
+            </a>
+          </div>
+
+          <div className="mt-5">
+            <p className="mt-2 font-bold">Step 2</p>
+            <p className="mt-1">
+              Connect Notion and select the duplicated page
+            </p>
+            {config.notionToken ? (
+              <p className="italic">Notion is already connected</p>
+            ) : (
+              <a href="https://api.notion.com/v1/oauth/authorize?client_id=198a806e-39a1-483c-bb1c-69f95c11d6c3&response_type=code&owner=user&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Fapi%2Fauth%2Fnotion">
+                <button className="bg-black text-white py-2 px-4 rounded-sm mt-3">
+                  Connect Notion
+                </button>
+              </a>
+            )}
+          </div>
+
+          <div className="mt-5">
+            <p className="mt-2 font-bold">Step 3</p>
+            <p className="mt-1">Enter the database URL</p>
+            <input
+              type="text"
+              placeholder="Notion Page URL"
+              className="border px-3 py-2 w-full border-black mt-3 rounded-sm focus:outline-none"
+              value={config.notionPage}
+              onChange={(e) => {
+                setConfig((prev) => ({
+                  ...prev,
+                  notionPage: e.target.value,
+                }));
+              }}
+            />
+          </div>
         </div>
+
         <div className="border w-full mt-10 border-black min-h-5 rounded-sm px-5 py-6">
           <h3 className="text-2xl">Hashnode Personal Access Token</h3>
           <p className="mt-1">
@@ -111,6 +130,7 @@ const ConfigPage = () => {
             }}
           />
         </div>
+
         <div className="border w-full mt-10 border-black min-h-5 rounded-sm px-5 py-6">
           <h3 className="text-2xl">Hashnode Publication ID</h3>
           <p className="mt-1">

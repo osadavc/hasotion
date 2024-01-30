@@ -8,12 +8,19 @@ import {
   onError,
   onNoMatch,
 } from "@/utils/apiUtils";
+import prisma from "@/utils/prisma";
 
 const router = createRouter<NextApiRequestWithUser, NextApiResponse>();
 router.use(auth);
 
 router.get(async (req, res) => {
-  res.redirect("/notion");
+  const loggedInUser = await prisma.user.findUnique({
+    where: {
+      id: req.userId,
+    },
+  });
+
+  // res.redirect("/notion");
 });
 
 export default router.handler({

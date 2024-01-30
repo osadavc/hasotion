@@ -15,4 +15,5 @@ model User {
   notionPage            String?
   hashnodeAccessToken   String?
   hashnodePublicationId String?
+  notionToken           String?
 }
