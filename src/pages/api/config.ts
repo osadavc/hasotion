@@ -22,7 +22,6 @@ router.get(async (req, res) => {
 
   res.json({
     data: {
-      notionPage: user?.notionPage,
       hashnodeAccessToken: user?.hashnodeAccessToken,
       hashnodePublicationId: user?.hashnodePublicationId,
       notionToken: !!user?.notionToken,
@@ -31,13 +30,9 @@ router.get(async (req, res) => {
 });
 
 router.post(async (req, res) => {
-  const { notionPage, hashnodeAccessToken, hashnodePublicationId } = req.body;
+  const { hashnodeAccessToken, hashnodePublicationId } = req.body;
 
-  if (
-    notionPage === null &&
-    hashnodeAccessToken === null &&
-    hashnodePublicationId === null
-  ) {
+  if (hashnodeAccessToken === null && hashnodePublicationId === null) {
     return res.status(400).json({
       error: "Notion page or hashnode token is not provided",
     });
@@ -49,7 +44,6 @@ router.post(async (req, res) => {
     },
     data: {
       hashnodeAccessToken: hashnodeAccessToken,
-      notionPage: notionPage,
       hashnodePublicationId: hashnodePublicationId,
     },
   });
