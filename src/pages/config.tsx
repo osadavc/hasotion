@@ -1,6 +1,7 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import env from "@/config";
 
 const ConfigPage = () => {
   const [config, setConfig] = useState<{
@@ -59,7 +60,7 @@ const ConfigPage = () => {
           {config.notionToken ? (
             <p className="italic mt-3">Notion is already connected</p>
           ) : (
-            <a href="https://api.notion.com/v1/oauth/authorize?client_id=198a806e-39a1-483c-bb1c-69f95c11d6c3&response_type=code&owner=user&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Fapi%2Fauth%2Fnotion">
+            <a href={env.notionAuthURL}>
               <button className="bg-black text-white py-2 px-4 rounded-sm mt-3">
                 Connect Notion
               </button>

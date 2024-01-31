@@ -5,6 +5,7 @@ let GOOGLE_CLIENT_SECRET;
 
 let NOTION_CLIENT_ID;
 let NOTION_CLIENT_SECRET;
+let NOTION_AUTH_URL;
 
 try {
   NEXTAUTH_URL = process.env.NEXTAUTH_URL;
@@ -14,6 +15,7 @@ try {
 
   NOTION_CLIENT_ID = process.env.NOTION_CLIENT_ID;
   NOTION_CLIENT_SECRET = process.env.NOTION_CLIENT_SECRET;
+  NOTION_AUTH_URL = process.env.NEXT_PUBLIC_NOTION_AUTH_URL;
 } catch (error) {
   console.log(error);
 }
@@ -24,6 +26,7 @@ const env = {
   googleClientSecret: GOOGLE_CLIENT_SECRET ?? "",
   notionClientId: NOTION_CLIENT_ID ?? "",
   notionClientSecret: NOTION_CLIENT_SECRET ?? "",
+  notionAuthURL: NOTION_AUTH_URL ?? "",
 };
 
 export default env;
