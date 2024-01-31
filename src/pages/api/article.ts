@@ -38,6 +38,8 @@ router.get(async (req, res) => {
     });
     const n2m = new NotionToMarkdown({ notionClient: notion });
 
+    // Step 1 - Get the database ID
+
     const { results: notionResult } = await notion.search({
       page_size: 1,
       filter: {
@@ -47,6 +49,8 @@ router.get(async (req, res) => {
     });
 
     const databaseId = notionResult[0].id;
+
+    // Step 2 - Get the database entries with ready checkbox checked
 
     const { results: databaseItems } = await notion.databases.query({
       database_id: databaseId,
@@ -74,6 +78,8 @@ router.get(async (req, res) => {
       await n2m.pageToMarkdown(savingItem.id)
     );
 
+    // Step 3 - Process all the properties to be consumed by the Hashnode API
+
     const title = savingItem.properties.Title.title
       .map((item: any) => item.plain_text)
       .join(" ");
@@ -94,27 +100,30 @@ router.get(async (req, res) => {
       }).replace(/[^a-zA-Z0-9-]/g, "");
 
     const subtitle = savingItem.properties.Subtitle.rich_text
-      .map((item: any) => item.plain_text)
+      ?.map((item: any) => item.plain_text)
       .join(" ");
 
-    const tags = savingItem.properties.Tags.rich_text[0].plain_text
-      .split(",")
-      .map((item: any) => ({
-        slug: slugify(item, {
-          lower: true,
-        }).replace(/[^a-zA-Z0-9-]/g, ""),
-        name: item,
-      }));
+    const tags =
+      savingItem.properties.Tags.rich_text[0]?.plain_text
+        .split(",")
+        .map((item: any) => ({
+          slug: slugify(item, {
+            lower: true,
+          }).replace(/[^a-zA-Z0-9-]/g, ""),
+          name: item,
+        })) || [];
 
     const coverImageURL =
       savingItem.properties["Cover Image"].files[0]?.file.url;
+
+    // Step 4 - Call Hashnode API and publish the post
 
     const gqlClient = new GraphQLClient("https://gql.hashnode.com/", {
       headers: {
         Authorization: loggedInUser.hashnodeAccessToken,
       },
     });
-    const data = await gqlClient.request(publishNewPostQuery, {
+    await gqlClient.request(publishNewPostQuery, {
       input: {
         title,
         subtitle,
@@ -128,12 +137,23 @@ router.get(async (req, res) => {
       },
     });
 
-    res.send(data);
+    // Step 5 - Uncheck the ready checkbox
+
+    databaseItems.forEach(async (item) => {
+      await notion.pages.update({
+        page_id: item.id,
+        properties: {
+          Ready: {
+            checkbox: false,
+          },
+        },
+      });
+    });
+
+    return res.redirect(`/notion?title=${title}`);
   } else {
     return res.redirect("/notion?error=notConfigured");
   }
-
-  // res.redirect("/notion");
 });
 
 export default router.handler({
