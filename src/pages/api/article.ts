@@ -11,10 +11,11 @@ import {
 import prisma from "@/utils/prisma";
 
 import { Client } from "@notionhq/client";
-import { GraphQLClient, gql } from "graphql-request";
+import { GraphQLClient } from "graphql-request";
 import { NotionToMarkdown } from "notion-to-md";
 import slugify from "slugify";
 import publishNewPostQuery from "@/graphql/publishNewPost";
+import updatePostQuery from "@/graphql/updatePost";
 
 const router = createRouter<NextApiRequestWithUser, NextApiResponse>();
 router.use(auth);
@@ -80,6 +81,10 @@ router.get(async (req, res) => {
 
     // Step 3 - Process all the properties to be consumed by the Hashnode API
 
+    const hashnodeId = savingItem.properties["Hashnode Post ID"].rich_text
+      ?.map((item: any) => item.plain_text)
+      .join(" ");
+
     const title = savingItem.properties.Title.title
       .map((item: any) => item.plain_text)
       .join(" ");
@@ -123,19 +128,39 @@ router.get(async (req, res) => {
         Authorization: loggedInUser.hashnodeAccessToken,
       },
     });
-    await gqlClient.request(publishNewPostQuery, {
-      input: {
-        title,
-        subtitle,
-        publicationId: loggedInUser.hashnodePublicationId,
-        contentMarkdown: notionString.parent,
-        slug,
-        tags,
-        coverImageOptions: {
-          coverImageURL,
+
+    let data: any;
+
+    if (hashnodeId) {
+      data = await gqlClient.request(updatePostQuery, {
+        input: {
+          id: hashnodeId,
+          title,
+          subtitle,
+          publicationId: loggedInUser.hashnodePublicationId,
+          contentMarkdown: notionString.parent,
+          slug,
+          tags,
+          coverImageOptions: {
+            coverImageURL,
+          },
         },
-      },
-    });
+      });
+    } else {
+      data = await gqlClient.request(publishNewPostQuery, {
+        input: {
+          title,
+          subtitle,
+          publicationId: loggedInUser.hashnodePublicationId,
+          contentMarkdown: notionString.parent,
+          slug,
+          tags,
+          coverImageOptions: {
+            coverImageURL,
+          },
+        },
+      });
+    }
 
     // Step 5 - Uncheck the ready checkbox
 
@@ -150,7 +175,28 @@ router.get(async (req, res) => {
       });
     });
 
-    return res.redirect(`/notion?title=${title}`);
+    // Step 6 - Save hashnode ID
+
+    if (!hashnodeId) {
+      await notion.pages.update({
+        page_id: savingItem.id,
+        properties: {
+          "Hashnode Post ID": {
+            rich_text: [
+              {
+                text: { content: data.publishPost.post.id.toString() },
+              },
+            ],
+          },
+        },
+      });
+    }
+
+    return res.redirect(
+      `/notion?title=${title}&url=${
+        data?.publishPost?.post.url || data?.updatePost?.post.url
+      }`
+    );
   } else {
     return res.redirect("/notion?error=notConfigured");
   }

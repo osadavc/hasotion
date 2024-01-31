@@ -32,9 +32,15 @@ const NotionDisplay = () => {
           <h1 className="text-3xl text-gray-600">
             Successfully Updated The Article
           </h1>
-          <p className="text-xl italic mt-2">
-            &quot;{router.query["title"]}&quot;
-          </p>
+          <a
+            href={router.query.url as string}
+            target="_blank"
+            className="text-blue-500"
+          >
+            <p className="text-xl italic mt-2">
+              &quot;{router.query["title"]}&quot;
+            </p>
+          </a>
           <p className="text-xs mt-8">
             * If this isn&apos;t the article you want to update, try again after
             ticking the <span className="font-bold">Ready</span> check box in

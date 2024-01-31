@@ -5,6 +5,7 @@ const publishNewPostQuery = gql`
     publishPost(input: $input) {
       post {
         id
+        url
       }
     }
   }
