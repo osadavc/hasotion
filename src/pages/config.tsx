@@ -53,7 +53,7 @@ const ConfigPage = () => {
             Connect Notion with the option &quot;Use a template provided by the
             developer&quot;. For more info, click{" "}
             <a
-              href="https://support.hashnode.com/en/articles/6423579-developer-access-token"
+              href="https://youtu.be/Z_OgY-KWM0Y"
               target="_blank"
               className="text-blue-500"
             >
@@ -105,7 +105,7 @@ const ConfigPage = () => {
             Go to your Hashnode blog dashboard and copy the publication ID from
             the URL. Details can be found{" "}
             <a
-              href="https://support.hashnode.com/en/articles/6423579-developer-access-token"
+              href="https://youtu.be/Z_OgY-KWM0Y"
               target="_blank"
               className="text-blue-500"
             >
