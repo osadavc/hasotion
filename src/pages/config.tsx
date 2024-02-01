@@ -10,6 +10,8 @@ const ConfigPage = () => {
     notionToken?: boolean;
   }>({});
 
+  const [notionURL, setNotionURL] = useState("");
+
   useEffect(() => {
     (async () => {
       const { data } = await axios.get("/api/config");
@@ -20,11 +22,13 @@ const ConfigPage = () => {
   const saveInfo = async () => {
     const saveInfoAPI = axios.post("/api/config", config);
 
-    await toast.promise(saveInfoAPI, {
+    const { data } = await toast.promise(saveInfoAPI, {
       error: "Error Ocurred",
       loading: "Saving",
-      success: "Successfully Saved",
+      success: "Successfully Saved, Click on Open Notion Page to continue",
     });
+
+    setNotionURL(data.notion);
   };
 
   return (
@@ -129,6 +133,17 @@ const ConfigPage = () => {
         >
           Save Changes
         </button>
+
+        {notionURL && (
+          <button
+            className="bg-black text-white py-2 px-5 rounded-sm"
+            onClick={() => {
+              window.open(notionURL, "_blank");
+            }}
+          >
+            Open Notion Page
+          </button>
+        )}
       </div>
     </div>
   );
