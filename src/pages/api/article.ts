@@ -1,6 +1,7 @@
 import { NextApiResponse } from "next";
 
 import { createRouter } from "next-connect";
+import { v2 as cloudinary } from "cloudinary";
 
 import {
   NextApiRequestWithUser,
@@ -16,6 +17,7 @@ import { NotionToMarkdown } from "notion-to-md";
 import slugify from "slugify";
 import publishNewPostQuery from "@/graphql/publishNewPost";
 import updatePostQuery from "@/graphql/updatePost";
+import env from "@/config";
 
 const router = createRouter<NextApiRequestWithUser, NextApiResponse>();
 router.use(auth);
@@ -118,8 +120,23 @@ router.get(async (req, res) => {
           name: item,
         })) || [];
 
-    const coverImageURL =
+    const notionCoverImageURL =
       savingItem.properties["Cover Image"].files[0]?.file.url;
+    let coverImageURL;
+
+    if (notionCoverImageURL) {
+      cloudinary.config({
+        cloud_name: env.cloudinaryCloudName,
+        api_key: env.cloudinaryAPIKey,
+        api_secret: env.cloudinaryAPISecret,
+      });
+
+      const { secure_url } = await cloudinary.uploader.upload(
+        notionCoverImageURL
+      );
+
+      coverImageURL = secure_url;
+    }
 
     // Step 4 - Call Hashnode API and publish the post
 
